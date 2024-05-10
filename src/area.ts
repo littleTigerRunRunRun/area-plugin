@@ -1,7 +1,7 @@
 import { Content } from './content'
 import { Drag } from './drag'
 import { Position } from './types'
-import { Zoom, ZoomSource } from './zoom'
+import { Zoom, ZoomSource, DblclickFilter } from './zoom'
 
 export type Transform = Position & { k: number }
 export type TranslateEventParams = { previous: Transform, position: Position }
@@ -21,6 +21,12 @@ type Guards = {
   zoom: (params: ZoomEventParams) => Promise<unknown | boolean>
 }
 
+export type AreaFilter = {
+  zoom: {
+    dblclick: DblclickFilter
+  }
+}
+
 export class Area {
   public transform: Transform = { k: 1, x: 0, y: 0 }
   public pointer: Position = { x: 0, y: 0 }
@@ -29,11 +35,16 @@ export class Area {
   private zoomHandler: Zoom | null = null
   private dragHandler: Drag | null = null
 
-  constructor(private container: HTMLElement, private events: Events, private guards: Guards) {
+  constructor(
+    private container: HTMLElement,
+    private events: Events,
+    private guards: Guards,
+    filter:AreaFilter
+  ) {
     this.content = new Content(element => this.events.reordered(element))
     this.content.holder.style.transformOrigin = '0 0'
 
-    this.setZoomHandler(new Zoom(0.1))
+    this.setZoomHandler(new Zoom(0.1, filter.zoom))
     this.setDragHandler(new Drag())
 
     this.container.addEventListener('pointerdown', this.pointerdown)

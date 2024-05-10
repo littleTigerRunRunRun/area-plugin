@@ -27,8 +27,7 @@
   },
   "devDependencies": {
     "rete": "^2.0.0",
-    "rete-cli": "^1.0.2",
-    "rollup-plugin-sass": "^0.9.2"
+    "rete-cli": "^1.0.2"
   },
   "dependencies": {
     "@babel/runtime": "^7.21.0"

@@ -1,12 +1,13 @@
 import { BaseSchemes, ConnectionId, NodeId, Root } from 'rete'
 
-import { Area, TranslateEventParams, ZoomEventParams } from './area'
+import { type AreaFilter, Area, TranslateEventParams, ZoomEventParams } from './area'
 import { BaseArea, BaseAreaPlugin } from './base'
 import { ConnectionView } from './connection-view'
 import { ElementsHolder } from './elements-holder'
 import { NodeView } from './node-view'
 import { GetRenderTypes, Position, RenderMeta } from './types'
 
+export type { AreaFilter } from './area'
 export { Area } from './area'
 export type { BaseArea } from './base'
 export { BaseAreaPlugin } from './base'
@@ -49,7 +50,7 @@ export class AreaPlugin<Schemes extends BaseSchemes, ExtraSignals = never> exten
   public area: Area
   private elements = new ElementsHolder<HTMLElement, Extract<Area2D<Schemes>, { type: 'render' }>['data'] & RenderMeta>()
 
-  constructor(public container: HTMLElement) {
+  constructor(public container: HTMLElement, filter?: AreaFilter) {
     super('area')
     container.style.overflow = 'hidden'
     container.addEventListener('contextmenu', this.onContextMenu)
@@ -91,6 +92,11 @@ export class AreaPlugin<Schemes extends BaseSchemes, ExtraSignals = never> exten
       {
         translate: params => this.emit({ type: 'translate', data: params }),
         zoom: params => this.emit({ type: 'zoom', data: params })
+      },
+      filter || {
+        zoom: {
+          dblclick: (num) => num
+        }
       }
     )
   }
