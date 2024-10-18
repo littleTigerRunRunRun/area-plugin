@@ -93,11 +93,7 @@ export class AreaPlugin<Schemes extends BaseSchemes, ExtraSignals = never> exten
         translate: params => this.emit({ type: 'translate', data: params }),
         zoom: params => this.emit({ type: 'zoom', data: params })
       },
-      filter || {
-        zoom: {
-          dblclick: (num) => num
-        }
-      }
+      filter || {}
     )
   }
 
@@ -117,7 +113,12 @@ export class AreaPlugin<Schemes extends BaseSchemes, ExtraSignals = never> exten
         resized: ({ size }) => this.emit({ type: 'noderesized', data: { id: node.id, size } })
       },
       {
-        translate: data => this.emit({ type: 'nodetranslate', data: { id, ...data } }),
+        translate: (data) => {
+          if (this.area.filter.move?.limit) {
+            data.position = this.area.filter.move.limit(data.position.x, data.position.y, id)
+          }
+          return this.emit({ type: 'nodetranslate', data: { id, ...data } })
+        },
         resize: ({ size }) => this.emit({ type: 'noderesize', data: { id: node.id, size } })
       }
     )

@@ -18,7 +18,7 @@ export class Zoom {
   protected element!: HTMLElement
   protected onzoom!: OnZoom
 
-  constructor(protected intensity: number, private filter: { dblclick: DblclickFilter }) { }
+  constructor(protected intensity: number, private filter?: { dblclick?: DblclickFilter }) { }
 
   public initialize(container: HTMLElement, element: HTMLElement, onzoom: OnZoom) {
     this.container = container
@@ -95,7 +95,7 @@ export class Zoom {
     e.preventDefault()
 
     const { left, top } = this.element.getBoundingClientRect()
-    const delta = this.filter.dblclick(4 * this.intensity)
+    const delta = (this.filter?.dblclick || function (n:number) { return n })(4 * this.intensity)
 
     if (delta === 0) return
 

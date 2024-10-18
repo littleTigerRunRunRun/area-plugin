@@ -22,8 +22,11 @@ type Guards = {
 }
 
 export type AreaFilter = {
-  zoom: {
-    dblclick: DblclickFilter
+  zoom?: {
+    dblclick?: DblclickFilter
+  },
+  move?: {
+    limit?: (x: number, y: number, id: string) => { x: number, y: number }
   }
 }
 
@@ -39,12 +42,12 @@ export class Area {
     private container: HTMLElement,
     private events: Events,
     private guards: Guards,
-    filter:AreaFilter
+    public filter:AreaFilter
   ) {
     this.content = new Content(element => this.events.reordered(element))
     this.content.holder.style.transformOrigin = '0 0'
 
-    this.setZoomHandler(new Zoom(0.1, filter.zoom))
+    this.setZoomHandler(new Zoom(0.1, filter?.zoom))
     this.setDragHandler(new Drag())
 
     this.container.addEventListener('pointerdown', this.pointerdown)

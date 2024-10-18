@@ -109,7 +109,9 @@ export type Selectable = ReturnType<typeof selector>
  * @listens pointermove
  * @listens pointerup
  */
-export function selectableNodes<T>(base: BaseAreaPlugin<Schemes, T>, core: Selectable, options: { accumulating: Accumulating }) {
+export function selectableNodes<T>(base: BaseAreaPlugin<Schemes, T>, core: Selectable, options: {
+  accumulating: Accumulating
+}) {
   let editor: null | NodeEditor<Schemes> = null
   const area = base as BaseAreaPlugin<Schemes, BaseArea<Schemes>>
   const getEditor = () => editor || (editor = area.parentScope<NodeEditor<Schemes>>(NodeEditor))
@@ -180,7 +182,9 @@ export function selectableNodes<T>(base: BaseAreaPlugin<Schemes, T>, core: Selec
       const dx = position.x - previous.x
       const dy = position.y - previous.y
 
-      if (core.isPicked({ id, label: 'node' })) core.translate(dx, dy)
+      if (core.isPicked({ id, label: 'node' })) {
+        core.translate(dx, dy)
+      }
     } else if (context.type === 'pointerdown') {
       twitch = 0
     } else if (context.type === 'pointermove') {
