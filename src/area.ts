@@ -42,7 +42,7 @@ export class Area {
     private container: HTMLElement,
     private events: Events,
     private guards: Guards,
-    public filter:AreaFilter
+    public filter: AreaFilter
   ) {
     this.content = new Content(element => this.events.reordered(element))
     this.content.holder.style.transformOrigin = '0 0'

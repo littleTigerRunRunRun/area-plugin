@@ -17,7 +17,7 @@ export class Zoom {
   protected element!: HTMLElement
   protected onzoom!: OnZoom
 
-  constructor(protected intensity: number, private filter?: { dblclick?: DblclickFilter }) { }
+  constructor(protected intensity: number, public filter?: { dblclick?: DblclickFilter }) { }
 
   public initialize(container: HTMLElement, element: HTMLElement, onzoom: OnZoom) {
     this.container = container

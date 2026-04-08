@@ -5,9 +5,9 @@ export default <ReteOptions>{
   input: 'src/index.ts',
   name: 'ReteAreaPlugin',
   plugins: [
-    sass({
-      insert: true
-    })
+    // sass({
+    //   insert: true
+    // })
   ],
   globals: {
     'rete': 'Rete'
