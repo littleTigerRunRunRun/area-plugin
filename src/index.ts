@@ -1,6 +1,6 @@
 import { BaseSchemes, ConnectionId, NodeId, Root } from 'rete'
 
-import { Area, TranslateEventParams, ZoomEventParams } from './area'
+import { type AreaFilter, Area, TranslateEventParams, ZoomEventParams } from './area'
 import { BaseArea, BaseAreaPlugin } from './base'
 import { ConnectionView } from './connection-view'
 import { ElementsHolder } from './elements-holder'
@@ -49,7 +49,7 @@ export class AreaPlugin<Schemes extends BaseSchemes, ExtraSignals = never> exten
   public area: Area
   private elements = new ElementsHolder<HTMLElement, Extract<Area2D<Schemes>, { type: 'render' }>['data'] & RenderMeta>()
 
-  constructor(public container: HTMLElement) {
+  constructor(public container: HTMLElement, filter?: AreaFilter) {
     super('area')
     container.style.overflow = 'hidden'
     container.addEventListener('contextmenu', this.onContextMenu)
@@ -91,7 +91,8 @@ export class AreaPlugin<Schemes extends BaseSchemes, ExtraSignals = never> exten
       {
         translate: params => this.emit({ type: 'translate', data: params }),
         zoom: params => this.emit({ type: 'zoom', data: params })
-      }
+      },
+      filter || {}
     )
   }
 
@@ -111,7 +112,12 @@ export class AreaPlugin<Schemes extends BaseSchemes, ExtraSignals = never> exten
         resized: ({ size }) => this.emit({ type: 'noderesized', data: { id: node.id, size } })
       },
       {
-        translate: data => this.emit({ type: 'nodetranslate', data: { id, ...data } }),
+        translate: (data) => {
+          if (this.area.filter.move?.limit) {
+            data.position = this.area.filter.move.limit(data.position.x, data.position.y, id)
+          }
+          return this.emit({ type: 'nodetranslate', data: { id, ...data } })
+        },
         resize: ({ size }) => this.emit({ type: 'noderesize', data: { id: node.id, size } })
       }
     )

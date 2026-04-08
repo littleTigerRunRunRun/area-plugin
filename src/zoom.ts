@@ -4,6 +4,7 @@
  */
 export type ZoomSource = 'wheel' | 'touch' | 'dblclick'
 export type OnZoom = (delta: number, ox: number, oy: number, source?: ZoomSource) => void
+export type DblclickFilter = (delta:number) => number
 
 /**
  * Zoom class, used to handle zooming of the area. Can be extended to add custom behavior.
@@ -16,7 +17,7 @@ export class Zoom {
   protected element!: HTMLElement
   protected onzoom!: OnZoom
 
-  constructor(protected intensity: number) { }
+  constructor(protected intensity: number, private filter?: { dblclick?: DblclickFilter }) { }
 
   public initialize(container: HTMLElement, element: HTMLElement, onzoom: OnZoom) {
     this.container = container
@@ -95,9 +96,13 @@ export class Zoom {
 
   protected dblclick = (e: MouseEvent) => {
     e.preventDefault()
+    
 
     const { left, top } = this.element.getBoundingClientRect()
-    const delta = 4 * this.intensity
+    // const delta = 4 * this.intensity
+    const delta = (this.filter?.dblclick || ((n:number) => n))(4 * this.intensity)
+
+    if (delta === 0) return
 
     const ox = (left - e.clientX) * delta
     const oy = (top - e.clientY) * delta
