@@ -15,6 +15,7 @@ type Events = {
   resize: (event: Event) => void
   translated: (params: TranslateEventParams) => Promise<unknown>
   reordered: (element: HTMLElement) => Promise<unknown>
+  rectSelect: (start?:Position, end?:Position) => void
 }
 type Guards = {
   translate: (params: TranslateEventParams) => Promise<unknown>
@@ -27,6 +28,7 @@ export type AreaFilter = {
   },
   move?: {
     limit?: (x: number, y: number, id: string) => { x: number, y: number }
+    isRectSelect: () => boolean
   }
 }
 
@@ -77,12 +79,14 @@ export class Area {
       this.container,
       {
         getCurrentPosition: () => this.transform,
-        getZoom: () => 1
+        getZoom: () => 1,
+        isRectSelect: this.filter?.move?.isRectSelect
       },
       {
         start: () => null,
         translate: this.onTranslate,
-        drag: () => null
+        drag: () => null,
+        rectSelect: this.events.rectSelect
       }
     )
   }

@@ -34,6 +34,7 @@ interface Area {
  */
 export type BaseArea<Schemes extends BaseSchemes> =
   | { type: 'nodepicked', data: { id: string } }
+  | { type: 'connectionpicked', data: { id: string } }
   | { type: 'nodedragged', data: Schemes['Node'] }
   | { type: 'nodetranslate', data: { id: string } & NodeTranslateEventParams }
   | { type: 'nodetranslated', data: { id: string } & NodeTranslateEventParams }
@@ -47,6 +48,7 @@ export type BaseArea<Schemes extends BaseSchemes> =
   | RenderSignal<'connection', { payload: Schemes['Connection'], start?: Position, end?: Position }>
   | { type: 'unmount', data: { element: HTMLElement } }
   | { type: 'reordered', data: { element: HTMLElement } }
+  | { type: 'rectselect', data: { start?:Position, end?:Position } }
 
 /**
  * Base abstract class for area plugins that provides a common interface

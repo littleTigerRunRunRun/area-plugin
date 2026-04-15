@@ -86,7 +86,8 @@ export class AreaPlugin<Schemes extends BaseSchemes, ExtraSignals = never> exten
         pointerUp: (position, event) => void this.emit({ type: 'pointerup', data: { position, event } }),
         resize: event => void this.emit({ type: 'resized', data: { event } }),
         translated: params => this.emit({ type: 'translated', data: params }),
-        reordered: element => this.emit({ type: 'reordered', data: { element } })
+        reordered: element => this.emit({ type: 'reordered', data: { element } }),
+        rectSelect: (start, end) => this.emit({ type: 'rectselect', data: { start, end } }) 
       },
       {
         translate: params => this.emit({ type: 'translate', data: params }),
@@ -145,6 +146,7 @@ export class AreaPlugin<Schemes extends BaseSchemes, ExtraSignals = never> exten
 
   public addConnectionView(connection: Schemes['Connection']) {
     const view = new ConnectionView({
+      picked: () => void this.emit({ type: 'connectionpicked', data: { id: connection.id } }),
       contextmenu: event => void this.emit({ type: 'contextmenu', data: { event, context: connection } })
     })
 

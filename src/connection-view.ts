@@ -1,6 +1,7 @@
 
 type Events = {
-  contextmenu: (event: MouseEvent) => void
+  contextmenu: (event: MouseEvent) => void,
+  picked: () => void
 }
 
 export class ConnectionView {
