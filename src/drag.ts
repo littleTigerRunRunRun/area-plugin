@@ -56,6 +56,7 @@ export class Drag {
     this.pointerStart = { x: e.pageX, y: e.pageY }
 
     if (this.config.isRectSelect && this.config.isRectSelect() && this.events.rectSelect) {
+      e.preventDefault()
       // 说明正在发起一次框选
       this.pointerRectEnd = { x: e.pageX, y: e.pageY }
       this.events.rectSelect(this.pointerStart, this.pointerRectEnd)
@@ -69,6 +70,8 @@ export class Drag {
 
   private move = (e: PointerEvent) => {
     if (this.pointerRectEnd && this.pointerStart && this.events.rectSelect) {
+      e.preventDefault()
+
       this.pointerRectEnd.x = e.pageX
       this.pointerRectEnd.y = e.pageY
       this.events.rectSelect(this.pointerStart, this.pointerRectEnd)

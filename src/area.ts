@@ -28,7 +28,7 @@ export type AreaFilter = {
   },
   move?: {
     limit?: (x: number, y: number, id: string) => { x: number, y: number }
-    isRectSelect: () => boolean
+    isRectSelect?: () => boolean
   }
 }
 
