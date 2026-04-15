@@ -5,7 +5,7 @@ type Events = {
   start: (e: PointerEvent) => void
   translate: (x: number, y: number, e: PointerEvent) => unknown
   drag: (e: PointerEvent) => void
-  rectSelect: (start?:Position, end?:Position) => void
+  rectSelect?: (start?:Position, end?:Position) => void
 }
 
 type Guards = {
@@ -55,7 +55,7 @@ export class Drag {
     e.stopPropagation()
     this.pointerStart = { x: e.pageX, y: e.pageY }
 
-    if (this.config.isRectSelect && this.config.isRectSelect()) {
+    if (this.config.isRectSelect && this.config.isRectSelect() && this.events.rectSelect) {
       // 说明正在发起一次框选
       this.pointerRectEnd = { x: e.pageX, y: e.pageY }
       this.events.rectSelect(this.pointerStart, this.pointerRectEnd)
@@ -68,7 +68,7 @@ export class Drag {
   }
 
   private move = (e: PointerEvent) => {
-    if (this.pointerRectEnd && this.pointerStart) {
+    if (this.pointerRectEnd && this.pointerStart && this.events.rectSelect) {
       this.pointerRectEnd.x = e.pageX
       this.pointerRectEnd.y = e.pageY
       this.events.rectSelect(this.pointerStart, this.pointerRectEnd)
@@ -90,7 +90,7 @@ export class Drag {
   }
 
   private up = (e: PointerEvent) => {
-    if (this.pointerRectEnd) {
+    if (this.pointerRectEnd && this.events.rectSelect) {
       this.pointerRectEnd = undefined
       this.events.rectSelect()
       return
