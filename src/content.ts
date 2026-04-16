@@ -3,6 +3,7 @@ export class Content {
 
   constructor(private reordered: (target: HTMLElement) => Promise<unknown>) {
     this.holder = document.createElement('div')
+    this.holder.setAttribute('rete-type', 'content')
     this.holder.style.transformOrigin = '0 0'
   }
 

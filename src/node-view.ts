@@ -23,6 +23,7 @@ export class NodeView {
 
   constructor(private getZoom: () => number, private events: Events, private guards: Guards) {
     this.element = document.createElement('div')
+    this.element.setAttribute('rete-type', 'node')
     this.element.style.position = 'absolute'
     this.position = { x: 0, y: 0 }
     void this.translate(0, 0)

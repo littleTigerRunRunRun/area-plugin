@@ -31,6 +31,39 @@ export function accumulateOnCtrl() {
   }
 }
 
+function checkCurrentSelected<T>(event:PointerEvent | MouseEvent, area: BaseAreaPlugin<Schemes, T>, core: Selectable) {
+  let selected = false
+
+  core.entities.forEach((entity) => {
+    try {
+      const element = area.nodeViews.get(entity.id)!.element
+      let currentElement = event.target
+      while (currentElement) {
+        // @ts-ignore
+        if (currentElement.nodeName.toUpperCase() === 'BODY') {
+          currentElement = null
+        }
+        // @ts-ignore
+        else if (currentElement!.getAttribute('rete-type') === 'node') {
+          if (element === currentElement) {
+            selected = true
+          }
+          currentElement = null
+        }
+        // @ts-ignore
+        else if (currentElement!.getAttribute('rete-type') === 'content') {
+          currentElement = null
+        // @ts-ignore
+        } else currentElement = currentElement!.parentNode
+      }
+    } catch (e) {
+      console.log(e)
+    }
+  })
+
+  return selected
+}
+
 export type SelectorEntity = {
   label: string
   id: string
@@ -83,6 +116,10 @@ export class Selector<E extends SelectorEntity> {
 
   isPicked(entity: Pick<E, 'label' | 'id'>) {
     return this.pickId === `${entity.label}_${entity.id}`
+  }
+
+  has(label:string, id:string) {
+    return this.entities.has(`${label}_${id}`)
   }
 }
 
@@ -175,8 +212,13 @@ export function selectableNodes<T>(base: BaseAreaPlugin<Schemes, T>, core: Selec
 
     if (context.type === 'nodepicked') {
       const pickedId = context.data.id
-      const accumulate = options.accumulating.active()
+      // 对于已经选中的节点不需要进行额外的选中操作
+      core.pick({ id: pickedId, label: 'node' })
+      if (core.has('node', pickedId)) {
+        return
+      }
 
+      const accumulate = options.accumulating.active()
       core.pick({ id: pickedId, label: 'node' })
       twitch = null
       await add(pickedId, accumulate)
@@ -187,6 +229,14 @@ export function selectableNodes<T>(base: BaseAreaPlugin<Schemes, T>, core: Selec
 
       if (core.isPicked({ id, label: 'node' })) await core.translate(dx, dy)
     } else if (context.type === 'pointerdown') {
+      if (context.data.event.button === 2) {
+        // 说明是右键点击
+        // 然后检测右键点击对象是不是已选中内容，是的话，则需要考虑不执行unselectAll
+        if (checkCurrentSelected(context.data.event, area, core)) {
+          twitch = null
+          return context
+        }
+      }
       twitch = 0
     } else if (context.type === 'pointermove') {
       if (twitch !== null) twitch++
