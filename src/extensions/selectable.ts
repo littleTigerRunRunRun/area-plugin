@@ -36,7 +36,11 @@ function checkCurrentSelected<T>(event:PointerEvent | MouseEvent, area: BaseArea
 
   core.entities.forEach((entity) => {
     try {
-      const element = area.nodeViews.get(entity.id)!.element
+      const nodeView = area.nodeViews.get(entity.id)
+      if (!nodeView) {
+        return false
+      }
+      const element = nodeView.element
       let currentElement = event.target
       while (currentElement) {
         // @ts-ignore
@@ -235,6 +239,13 @@ export function selectableNodes<T>(base: BaseAreaPlugin<Schemes, T>, core: Selec
         if (checkCurrentSelected(context.data.event, area, core)) {
           twitch = null
           return context
+        }
+      }
+      // 点击左键，并且没有ctrl，则立马
+      if (context.data.event.button === 0 && !options.accumulating.active()) {
+        if (!checkCurrentSelected(context.data.event, area, core)) {
+          // 并且检查了这次事件点击的不是当前选中内容
+          await core.unselectAll()
         }
       }
       twitch = 0
